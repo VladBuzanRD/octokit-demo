@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    service: postgis-client
+  name: postgis-client
+spec:
+  serviceName: "postgis-client"
+  replicas: 1
+  selector:
+    matchLabels:
+      service: postgis-client
+  template:
+    metadata:
+      labels:
+        service: postgis-client
+    spec:
+      containers:
+      - image: postgis/postgis:15-master
+        name: postgis-client
+        envFrom:
+        - configMapRef:
+            name: postgis-configmap
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "GO6h5AC2zQP8Pq1"
+#           valueFrom:
+#             secretKeyRef:
+#               name: db-credentials
+#               key: password
+        ports:
+        - containerPort: 5432
+        resources: 
+          limits:
+            memory: "7Gi"
+            cpu: "1.5"
+          requests:
+            memory: "1Gi"
+            cpu: "100m"
+        volumeMounts:
+        - mountPath: "/var/lib/postgresql/12/main"
+          name: azure-managed-disk
+      tolerations:
+      - key: "layer"
+        operator: "Equal"
+        value: "postgre"
+        effect: "NoSchedule"
+      nodeSelector:
+        layer: postgre
+  volumeClaimTemplates:
+  - metadata:
+      name: azure-managed-disk
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: default
+      resources:
+        requests:
+          storage: 64Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    service: postgis-client-2
+  name: postgis-client-2
+spec:
+  serviceName: "postgis-client-2"
+  replicas: 1
+  selector:
+    matchLabels:
+      service: postgis-client-2
+  template:
+    metadata:
+      labels:
+        service: postgis-client-2
+    spec:
+      containers:
+      - image:  windgiswesteuropecr001.azurecr.io/postgis:latest
+        name: postgis-client-2
+        envFrom:
+        - configMapRef:
+            name: postgis-configmap
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "-NdQ2+6L?kpzr5Sy"
+#           valueFrom:
+#             secretKeyRef:
+#               name: db-credentials
+#               key: password
+        ports:
+        - containerPort: 5432
+        resources: 
+          limits:
+            memory: "7Gi"
+            cpu: "1.5"
+          requests:
+            memory: "1Gi"
+            cpu: "100m"
+        volumeMounts:
+        - mountPath: "/var/lib/postgresql/12/main"
+          name: azure-managed-disk
+      tolerations:
+      - key: "layer"
+        operator: "Equal"
+        value: "postgre"
+        effect: "NoSchedule"
+      nodeSelector:
+        layer: postgre
+  volumeClaimTemplates:
+  - metadata:
+      name: azure-managed-disk
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: default
+      resources:
+        requests:
+          storage: 64Gi
