@@ -54,3 +54,23 @@ spec:
     service: postgis-client-0-0
 status:
   loadBalancer: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: postgis-client-13-14
+  name: postgis-client-13-14
+spec:
+  ports:
+  - name: 5432
+    port: 5432
+    targetPort: 5432
+  - name: 22
+    port: 22
+    targetPort: 22
+  selector:
+    service: postgis-client-13-14
+status:
+  loadBalancer: {}
