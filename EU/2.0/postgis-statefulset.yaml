@@ -401,3 +401,60 @@ spec:
       resources:
         requests:
           storage: 64Gi
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    service: postgis-client-13-14
+  name: postgis-client-13-14
+spec:
+  serviceName: postgis-client-13-14
+  replicas: 1
+  selector:
+    matchLabels:
+      service: postgis-client-13-14
+  template:
+    metadata:
+      labels:
+        service: postgis-client-13-14
+    spec:
+      containers:
+      - image: postgis/postgis:15-master
+        name: postgis-client-13-14
+        envFrom:
+        - configMapRef:
+            name: postgis-configmap
+        env:
+        - name: POSTGRES_PASSWORD
+          value: this
+        ports:
+        - containerPort: 5432
+        resources:
+          limits:
+            memory: 7Gi
+            cpu: 1.5
+          requests:
+            memory: 1Gi
+            cpu: 100m
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/12/main
+          name: azure-managed-disk
+      tolerations:
+      - key: layer
+        operator: Equal
+        value: postgre
+        effect: NoSchedule
+      nodeSelector:
+        layer: postgre
+  volumeClaimTemplates:
+  - metadata:
+      name: azure-managed-disk
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: default
+      resources:
+        requests:
+          storage: 64Gi
