@@ -53,6 +53,7 @@ spec:
       resources:
         requests:
           storage: 64Gi
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -136,7 +137,7 @@ spec:
             name: postgis-configmap
         env:
         - name: POSTGRES_PASSWORD
-          value: string
+          value: test
         ports:
         - containerPort: 5432
         resources:
