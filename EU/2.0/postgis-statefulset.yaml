@@ -53,6 +53,7 @@ spec:
       resources:
         requests:
           storage: 64Gi
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -109,6 +110,7 @@ spec:
       resources:
         requests:
           storage: 64Gi
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
