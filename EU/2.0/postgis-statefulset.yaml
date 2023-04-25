@@ -137,7 +137,7 @@ spec:
             name: postgis-configmap
         env:
         - name: POSTGRES_PASSWORD
-          value: test
+          value: string
         ports:
         - containerPort: 5432
         resources:
