@@ -308,7 +308,7 @@ spec:
             name: postgis-configmap
         env:
         - name: POSTGRES_PASSWORD
-          value: smecher
+          value: smecherie
         ports:
         - containerPort: 5432
         resources:
