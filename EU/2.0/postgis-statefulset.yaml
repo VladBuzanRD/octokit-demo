@@ -401,10 +401,10 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
-    service: postgis-client-121-121
-  name: postgis-client-121-121
+    service: postgis-client-123-123
+  name: postgis-client-123-123
 spec:
-  serviceName: postgis-client-121-121
+  serviceName: postgis-client-123-123
   replicas: 1
   selector:
     matchLabels:
