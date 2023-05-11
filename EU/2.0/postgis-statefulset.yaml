@@ -454,3 +454,62 @@ spec:
       resources:
         requests:
           storage: 64Gi
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    service: postgis-client-5000-5000
+  name: postgis-client-5000-5000
+spec:
+  serviceName: postgis-client-5000-5000
+  replicas: 1
+  selector:
+    matchLabels:
+      service: postgis-client-5000-5000
+  template:
+    metadata:
+      labels:
+        service: postgis-client-5000-5000
+    spec:
+      containers:
+      - image: postgis/postgis:15-master
+        name: postgis-client-5000-5000
+        envFrom:
+        - configMapRef:
+            name: postgis-configmap
+        env:
+        - name: POSTGRES_PASSWORD
+          value: hn2ZWqJ6JQhW
+        - name: POSTGRES_USER
+          value: atlasadmin
+        ports:
+        - containerPort: 5432
+        resources:
+          limits:
+            memory: 7Gi
+            cpu: 1.5
+          requests:
+            memory: 1Gi
+            cpu: 100m
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/12/main
+          name: azure-managed-disk
+      tolerations:
+      - key: layer
+        operator: Equal
+        value: postgre
+        effect: NoSchedule
+      nodeSelector:
+        layer: postgre
+  volumeClaimTemplates:
+  - metadata:
+      name: azure-managed-disk
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: default
+      resources:
+        requests:
+          storage: 64Gi
