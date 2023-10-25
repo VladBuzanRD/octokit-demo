@@ -585,3 +585,75 @@ spec:
       resources:
         requests:
           storage: 64Gi
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    service: postgis-client-123121-2231
+  name: postgis-client-123121-2231
+spec:
+  serviceName: postgis-client-123121-2231
+  replicas: 1
+  selector:
+    matchLabels:
+      service: postgis-client-123121-2231
+  template:
+    metadata:
+      labels:
+        service: postgis-client-123121-2231
+    spec:
+      initContainers:
+      - name: delete-lost-and-found
+        image: busybox:1.34.1
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: azure-managed-disk
+        command:
+        - sh
+        - -c
+        - cd /var/lib/postgresql/data && ls -lah && rm -rf lost+found
+      containers:
+      - image: postgis/postgis:15-master
+        name: postgis-client-123121-2231
+        envFrom:
+        - configMapRef:
+            name: postgis-configmap
+        env:
+        - name: POSTGRES_PASSWORD
+          value: yLtE0?itQ95a
+        - name: POSTGRES_USER
+          value: atlasadmin
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        ports:
+        - containerPort: 5432
+        resources:
+          limits:
+            memory: 7Gi
+            cpu: 1.5
+          requests:
+            memory: 1Gi
+            cpu: 100m
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: azure-managed-disk
+          subPath: pgdata
+      tolerations:
+      - key: layer
+        operator: Equal
+        value: postgre
+        effect: NoSchedule
+      nodeSelector:
+        layer: postgre
+  volumeClaimTemplates:
+  - metadata:
+      name: azure-managed-disk
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: default
+      resources:
+        requests:
+          storage: 64Gi
